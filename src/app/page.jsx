@@ -1,3 +1,4 @@
+import Feed from "@/components/Feed.jsx";
 
 export default function Home() {
   return (
@@ -12,7 +13,7 @@ export default function Home() {
       </p>
 
       {/* feed */}
-      
+      <Feed />
     </section>
   );
 }
