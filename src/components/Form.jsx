@@ -12,7 +12,7 @@ const Form = ({ type, post, setPost, submitting, handleSubmit }) => {
                 platform
             </p>
 
-            <form action=""
+            <form
                 onSubmit={handleSubmit}
                 className='mt-10 w-full max-w-2xl flex flex-col gap-7 glassmorphism'
             >
