@@ -9,25 +9,33 @@ import Form from "@/components/Form"
 
 const EditPrompt = () => {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const promptId = searchParams.get('id');
+    const [searchParams, setSearchParams] = useState(null);  // Store search params here
+    const [promptId, setPromptId] = useState(null);
     const [submitting, setIsSubmitting] = useState(false);
     const [post, setPost] = useState({ prompt: "", tag: "" });
 
+    // Set searchParams and promptId after mount (client-side)
     useEffect(() => {
-        const getpromptDetails = async () => {
-            const res = await fetch(`/api/prompt/${promptId}`)
-            const data = await res.json();
+        const params = new URLSearchParams(window.location.search);  // Using the window object directly
+        setSearchParams(params);
+        setPromptId(params.get('id'));
+    }, []); // Empty dependency array ensures this runs only once on mount
 
-            setPost({
-                prompt: data.prompt,
-                tag: data.tag
-            })
+    useEffect(() => {
+        if (promptId) {
+            const getpromptDetails = async () => {
+                const res = await fetch(`/api/prompt/${promptId}`);
+                const data = await res.json();
+
+                setPost({
+                    prompt: data.prompt,
+                    tag: data.tag
+                })
+            }
+
+            getpromptDetails();
         }
-
-        if (promptId) getpromptDetails();
-
-    }, [promptId])
+    }, [promptId]);
 
     const updatePrompt = async (e) => {
         e.preventDefault();
@@ -42,7 +50,7 @@ const EditPrompt = () => {
                     prompt: post.prompt,
                     tag: post.tag
                 })
-            })
+            });
 
             if (res.ok) {
                 router.push('/');
@@ -55,16 +63,20 @@ const EditPrompt = () => {
     }
 
     return (
-        <Suspense>
-            <Form
-                type='Edit'
-                post={post}
-                setPost={setPost}
-                submitting={submitting}
-                handleSubmit={updatePrompt}
-            />
+        // Wrapping the form in Suspense is still a good practice for client-side behavior
+        <Suspense fallback={<div>Loading...</div>}>
+            {searchParams && promptId ? (
+                <Form
+                    type='Edit'
+                    post={post}
+                    setPost={setPost}
+                    submitting={submitting}
+                    handleSubmit={updatePrompt}
+                />
+            ) : (
+                <div>Loading...</div>
+            )}
         </Suspense>
-
     );
 }
 
