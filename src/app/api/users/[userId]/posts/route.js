@@ -4,8 +4,9 @@ import Prompt from "@/models/prompt";
 export const GET = async (req, {params}) => {
   try {
     await connectToDB();
+    const { userId } = await params
     const prompts = await Prompt.find({
-        creator:params?.userId
+        creator:userId
     }).populate('creator')
     return new Response(JSON.stringify(prompts), {
       status: 200,
